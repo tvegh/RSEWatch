@@ -11,6 +11,8 @@ static TextLayer *s_time_layer;
 static TextLayer *s_date_layer;
 static GFont s_time_font;
 static GFont s_weather_font;
+static GFont s_eleven_font;
+static GFont s_ten_font;
 static Layer *s_background_layer;
 static BitmapLayer *s_backsprite_layer;
 static BitmapLayer *s_frontsprite_layer;
@@ -59,22 +61,25 @@ persist settings = {
 bool already_read = false;
 static uint32_t background_list[5] = {RESOURCE_ID_BATTLE_SCENE_CLEAR, RESOURCE_ID_BATTLE_SCENE_64, RESOURCE_ID_BATTLE_SCENE_CLOUDS, RESOURCE_ID_BATTLE_SCENE_RAIN, RESOURCE_ID_BATTLE_SCENE_SNOW};
 static uint32_t background_round_list[5] = {RESOURCE_ID_BACKGROUND_CLEAR_ROUND, RESOURCE_ID_BACKGROUND_64_ROUND, RESOURCE_ID_BACKGROUND_CLOUDS_ROUND, RESOURCE_ID_BACKGROUND_RAIN_ROUND, RESOURCE_ID_BACKGROUND_SNOW_ROUND};
-static uint32_t pokemon_back_list[34] = {RESOURCE_ID_POKEMONBACK_1, RESOURCE_ID_POKEMONBACK_2, RESOURCE_ID_POKEMONBACK_3, RESOURCE_ID_POKEMONBACK_4, RESOURCE_ID_POKEMONBACK_5, RESOURCE_ID_POKEMONBACK_6, RESOURCE_ID_POKEMONBACK_7,
+static uint32_t pokemon_back_list[] = {RESOURCE_ID_POKEMONBACK_1, RESOURCE_ID_POKEMONBACK_2, RESOURCE_ID_POKEMONBACK_3, RESOURCE_ID_POKEMONBACK_4, RESOURCE_ID_POKEMONBACK_5, RESOURCE_ID_POKEMONBACK_6, RESOURCE_ID_POKEMONBACK_7,
                                     RESOURCE_ID_POKEMONBACK_8, RESOURCE_ID_POKEMONBACK_9, RESOURCE_ID_POKEMONBACK_10, RESOURCE_ID_POKEMONBACK_11, RESOURCE_ID_POKEMONBACK_12, RESOURCE_ID_POKEMONBACK_13,
                                     RESOURCE_ID_POKEMONBACK_14, RESOURCE_ID_POKEMONBACK_15, RESOURCE_ID_POKEMONBACK_16, RESOURCE_ID_POKEMONBACK_17, RESOURCE_ID_POKEMONBACK_18, RESOURCE_ID_POKEMONBACK_19,
                                     RESOURCE_ID_POKEMONBACK_20, RESOURCE_ID_POKEMONBACK_21, RESOURCE_ID_POKEMONBACK_22, RESOURCE_ID_POKEMONBACK_23, RESOURCE_ID_POKEMONBACK_24, RESOURCE_ID_POKEMONBACK_25,
                                     RESOURCE_ID_POKEMONBACK_26, RESOURCE_ID_POKEMONBACK_27, RESOURCE_ID_POKEMONBACK_28, RESOURCE_ID_POKEMONBACK_29, RESOURCE_ID_POKEMONBACK_30, RESOURCE_ID_POKEMONBACK_31,
-                                    RESOURCE_ID_POKEMONBACK_32, RESOURCE_ID_POKEMONBACK_33, RESOURCE_ID_POKEMONBACK_34};
-static uint32_t pokemon_front_list[34] = {RESOURCE_ID_POKEMONFRONT_1, RESOURCE_ID_POKEMONFRONT_2, RESOURCE_ID_POKEMONFRONT_3, RESOURCE_ID_POKEMONFRONT_4, RESOURCE_ID_POKEMONFRONT_5, RESOURCE_ID_POKEMONFRONT_6, RESOURCE_ID_POKEMONFRONT_7,
+                                    RESOURCE_ID_POKEMONBACK_32, RESOURCE_ID_POKEMONBACK_33, RESOURCE_ID_POKEMONBACK_34, RESOURCE_ID_POKEMONBACK_35, RESOURCE_ID_POKEMONBACK_36};
+static uint32_t pokemon_front_list[] = {RESOURCE_ID_POKEMONFRONT_1, RESOURCE_ID_POKEMONFRONT_2, RESOURCE_ID_POKEMONFRONT_3, RESOURCE_ID_POKEMONFRONT_4, RESOURCE_ID_POKEMONFRONT_5, RESOURCE_ID_POKEMONFRONT_6, RESOURCE_ID_POKEMONFRONT_7,
                                     RESOURCE_ID_POKEMONFRONT_8, RESOURCE_ID_POKEMONFRONT_9, RESOURCE_ID_POKEMONFRONT_10, RESOURCE_ID_POKEMONFRONT_11, RESOURCE_ID_POKEMONFRONT_12, RESOURCE_ID_POKEMONFRONT_13,
                                     RESOURCE_ID_POKEMONFRONT_14, RESOURCE_ID_POKEMONFRONT_15, RESOURCE_ID_POKEMONFRONT_16, RESOURCE_ID_POKEMONFRONT_17, RESOURCE_ID_POKEMONFRONT_18, RESOURCE_ID_POKEMONFRONT_19,
                                     RESOURCE_ID_POKEMONFRONT_20, RESOURCE_ID_POKEMONFRONT_21, RESOURCE_ID_POKEMONFRONT_22, RESOURCE_ID_POKEMONFRONT_23, RESOURCE_ID_POKEMONFRONT_24, RESOURCE_ID_POKEMONFRONT_25,
                                     RESOURCE_ID_POKEMONFRONT_26, RESOURCE_ID_POKEMONFRONT_27, RESOURCE_ID_POKEMONFRONT_28, RESOURCE_ID_POKEMONFRONT_29, RESOURCE_ID_POKEMONFRONT_30, RESOURCE_ID_POKEMONFRONT_31,
-                                    RESOURCE_ID_POKEMONFRONT_32, RESOURCE_ID_POKEMONFRONT_33, RESOURCE_ID_POKEMONFRONT_34};
-static int pokemon_level[34] = {7, 22, 1, 1, 1, 1, 1, 1, 1, 25, 1, 32, 1, 1, 1, 75, 45, 15, 1, 15, 25, 50, 50, 70, 70, 1, 20, 1, 32, 42, 1, 1, 45, 70};
+                                    RESOURCE_ID_POKEMONFRONT_32, RESOURCE_ID_POKEMONFRONT_33, RESOURCE_ID_POKEMONFRONT_34, RESOURCE_ID_POKEMONFRONT_35, RESOURCE_ID_POKEMONFRONT_36};
+static uint32_t pokemon_front_test_list[] = {RESOURCE_ID_POKEMONFRONT_35, RESOURCE_ID_POKEMONFRONT_36};
+static uint32_t pokemon_back_test_list[] = {RESOURCE_ID_POKEMONBACK_35, RESOURCE_ID_POKEMONBACK_36};
+//static int pokemon_level[35] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 32, 1, 1, 1, 75, 45, 15, 1, 15, 25, 50, 50, 70, 70, 1, 20, 1, 32, 42, 1, 1, 45, 70, 1};
 const char *pokemon_names[] = {"KAKUNA", "ARBOK", "RAICHU", "VULPIX", "ZUBAT", "PARAS", "MEOWTH", "ABRA", "PONYTA", "GENGAR", "ONIX", "SEADRA", "TAUROS", "LAPRAS",
                             "EEVEE", "MEWTWO", "MEW", "FURRET", "YANMA", "ESPEON", "SCIZOR", "RAIKOU", "ENTEI", "LUGIA", "HO-OH", "MUDKIP", "KIRLIA", "ARON",
-                            "LAIRON", "AGGRON", "ABSOL", "BELDUM", "LATIAS", "KYOGRE"};
+                            "LAIRON", "AGGRON", "ABSOL", "BELDUM", "LATIAS", "KYOGRE", "DEWGONG", "SQUIRTLE"};
+const char *test_pokemon_names[] = {"DEWGONG", "SQUIRTLE"};
 
 static void update_time() {
   // Get a tm structure for time
@@ -311,17 +316,69 @@ static void time_left_update_proc(Layer *layer, GContext *ctx) {
   
 }
 
-static void get_new_sprite(int level, bool front_back){
+int my_strlen(const char *a){
+    const char *b;
+    for (b=a;*b;++b);
+    return b-a;
+}
+
+static void change_font_size(const char *name, bool front_back){
+  if (front_back) {
+    if (my_strlen(name) == 8) {
+      text_layer_set_font(s_frontname_layer,s_eleven_font);
+    }
+    else if (my_strlen(name) == 9) {
+      text_layer_set_font(s_frontname_layer,s_ten_font);
+    }
+    else {
+    text_layer_set_font(s_frontname_layer, s_weather_font);
+    }
+  }
+  else {
+    if (my_strlen(name) == 7) {
+      text_layer_set_font(s_oppname_layer,s_eleven_font);
+    }
+    else if (my_strlen(name) == 8) {
+      text_layer_set_font(s_oppname_layer,s_ten_font);
+    }
+    else {
+      text_layer_set_font(s_oppname_layer, s_weather_font);
+    }
+  }  
+}
+
+static void get_test_sprite(bool front_back){
+  int len = sizeof(pokemon_back_test_list) / sizeof(pokemon_back_test_list[0]);
+  int random_num = 1;
+  random_num = rand() % len;
+  if(front_back){
+    gbitmap_destroy(s_backsprite_bitmap);
+    s_backsprite_bitmap = gbitmap_create_with_resource(pokemon_back_test_list[random_num]);
+    text_layer_set_text(s_frontname_layer, test_pokemon_names[random_num]);
+    change_font_size(test_pokemon_names[random_num], front_back);
+    settings.yournumber = random_num;
+    }
+  else{
+    gbitmap_destroy(s_frontsprite_bitmap);
+    s_frontsprite_bitmap = gbitmap_create_with_resource(pokemon_front_test_list[random_num]);
+    text_layer_set_text(s_oppname_layer, test_pokemon_names[random_num]);
+    change_font_size(test_pokemon_names[random_num], front_back);
+    settings.oppnumber = random_num;
+  }
+}
+
+static void get_new_sprite(bool front_back){
   //get random number from 0 to 33
   //pokemon's level must be less than or equal to supplied level
   int len = sizeof(pokemon_back_list) / sizeof(pokemon_back_list[0]);
-  if(level<1){
+  /*if(level<1){
     level = 1;
-  }
+  }*/
   int random_num = 1;
-  do{
+  /*do{
     random_num = rand() % len;
-  }while(pokemon_level[random_num]>level);
+  }while(pokemon_level[random_num]>level);*/
+  random_num = rand() % len;
   
   //destroy current sprite and set new one to memory
   //Set new name to layer
@@ -329,12 +386,14 @@ static void get_new_sprite(int level, bool front_back){
     gbitmap_destroy(s_backsprite_bitmap);
     s_backsprite_bitmap = gbitmap_create_with_resource(pokemon_back_list[random_num]);
     text_layer_set_text(s_frontname_layer, pokemon_names[random_num]);
+    change_font_size(pokemon_names[random_num], front_back);
     settings.yournumber = random_num;
-  }
+    }
   else{
     gbitmap_destroy(s_frontsprite_bitmap);
     s_frontsprite_bitmap = gbitmap_create_with_resource(pokemon_front_list[random_num]);
     text_layer_set_text(s_oppname_layer, pokemon_names[random_num]);
+    change_font_size(pokemon_names[random_num], front_back);
     settings.oppnumber = random_num;
   }
 }
@@ -366,7 +425,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     text_layer_set_text(s_weather_layer, weather_layer_buffer);
   
     //set your sprite 
-    get_new_sprite(s_battery_level, true);
+    //get_new_sprite(s_battery_level, true);
+    get_new_sprite(true);
     bitmap_layer_set_bitmap(s_backsprite_layer, s_backsprite_bitmap);
   
     //set opponent sprite
@@ -374,7 +434,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     if (!settings.units_use_f){
       temp = (int)(temp*(9.0/5.0)+32);
     }
-    get_new_sprite(temp, false);
+    //get_new_sprite(temp, false);
+    get_new_sprite(false);
     bitmap_layer_set_bitmap(s_frontsprite_layer, s_frontsprite_bitmap);
   }
   else if(units_tuple && date_tuple && steps_tuple){
@@ -413,14 +474,16 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
   APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
 }
 
-static void handle_tap(AccelAxisType axis, int32_t direction){
-  get_new_sprite(s_battery_level, true);
+/*static void handle_tap(AccelAxisType axis, int32_t direction){
+  //get_new_sprite(s_battery_level, true);
+  get_new_sprite(true);
   bitmap_layer_set_bitmap(s_backsprite_layer, s_backsprite_bitmap);
   
   //set opponent sprite
-  get_new_sprite(settings.opplevel, false);
+  //get_new_sprite(settings.opplevel, false);
+  get_new_sprite(false);
   bitmap_layer_set_bitmap(s_frontsprite_layer, s_frontsprite_bitmap);
-}
+}*/
 
 static void battery_callback(BatteryChargeState state) {
   // Record the new battery level
@@ -438,6 +501,33 @@ static void bluetooth_callback(bool connected) {
     // Issue a vibrating alert
     vibes_double_pulse();
   }
+}
+
+void up_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+   get_new_sprite(false);
+   bitmap_layer_set_bitmap(s_frontsprite_layer, s_frontsprite_bitmap);
+}
+ 
+void down_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+   get_new_sprite(true);
+   bitmap_layer_set_bitmap(s_backsprite_layer, s_backsprite_bitmap);
+}
+ 
+void select_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+   get_new_sprite(true);
+   bitmap_layer_set_bitmap(s_backsprite_layer, s_backsprite_bitmap);
+   get_new_sprite(false);
+   bitmap_layer_set_bitmap(s_frontsprite_layer, s_frontsprite_bitmap);
+}
+
+void click_config_provider(void *context)
+{
+    window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
+    window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+    window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
 }
 
 static void main_window_load(Window *window) {
@@ -544,6 +634,8 @@ static void main_window_load(Window *window) {
   // Create GFont
   s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_POKEMON_35));
   s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_POKEMON_12));
+  s_eleven_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_POKEMON_11));
+  s_ten_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_POKEMON_10));
 
   // Improve the layout to be more like a watchface
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -575,13 +667,13 @@ static void main_window_load(Window *window) {
   text_layer_set_text_color(s_frontname_layer, GColorDarkGray);
   text_layer_set_text_alignment(s_frontname_layer, GTextAlignmentLeft);
   text_layer_set_text(s_frontname_layer, pokemon_names[load_yournumber]);
-  text_layer_set_font(s_frontname_layer, s_weather_font);
+  change_font_size(pokemon_names[load_yournumber], true);
   
   text_layer_set_background_color(s_oppname_layer, GColorClear);
   text_layer_set_text_color(s_oppname_layer, GColorDarkGray);
   text_layer_set_text_alignment(s_oppname_layer, GTextAlignmentLeft);
   text_layer_set_text(s_oppname_layer, pokemon_names[load_oppnumber]);
-  text_layer_set_font(s_oppname_layer, s_weather_font);
+  change_font_size(pokemon_names[load_oppnumber], false);
   
   // Actually your battery info
   text_layer_set_background_color(s_opp_level_layer, GColorClear);
@@ -696,6 +788,9 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 static void init() {
   // Create main Window element and assign to pointer
   s_main_window = window_create();
+  
+  //buttons
+  window_set_click_config_provider(s_main_window, click_config_provider);
 
   // Set handlers to manage the elements inside the Window
   window_set_window_handlers(s_main_window, (WindowHandlers) {
@@ -736,7 +831,7 @@ static void init() {
   });
   
   // Register for wrist shake/tap
-  accel_tap_service_subscribe(handle_tap);
+  //accel_tap_service_subscribe(handle_tap);
 }
 
 static void deinit() {
